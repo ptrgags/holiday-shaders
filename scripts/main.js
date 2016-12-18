@@ -1,30 +1,75 @@
 'use strict';
-var init = () => {
+
+var uniforms = {};
+
+var vert_shaders = [];
+var frag_shaders = [];
+
+var vert_shader_list = [
+    "default.vert"
+];
+
+var frag_shader_list = [
+    "orange.frag",
+    "quasicrystal.frag",
+    "mandelbrot.frag"
+];
+
+var current_vert = 0;
+var current_frag = 2;
+
+var camera = null;
+var renderer = null;
+
+var preload_shader = (fname) => {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: `shaders/${fname}`,
+            dataType: 'text',
+            success: resolve,
+            error: reject
+        });
+    });
+};
+
+var load_vert_shaders = () => {
+    return Promise.all(vert_shader_list.map(preload_shader));
+};
+
+var load_frag_shaders = () => {
+    return Promise.all(frag_shader_list.map(preload_shader));
+};
+
+var store_vert_shaders = (shader_text) => {
+    for (var i = 0; i < vert_shader_list.length; i++)
+        vert_shaders.push(shader_text[i]);
+};
+
+var store_frag_shaders = (shader_text) => {
+    for (var i = 0; i < frag_shader_list.length; i++)
+        frag_shaders.push(shader_text[i]);
+};
+
+var setup_shaders = () => {
+    // Set the scene
     var scene = new THREE.Scene();
 
-    //FOV, aspect ratio, near and far clipping plane
-    /*
-    var camera = new THREE.PerspectiveCamera(
-        75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    */
-
-    //left, right, top, bottom, near, far
+    // lights, Camera, action! except there's no
+    // lights or action yet...
     var width = window.innerWidth;
     var height = window.innerHeight;
-    var camera = new THREE.OrthographicCamera(-width/2, width/2, height/2, height/-2, 1, 1000);
+    camera = new THREE.OrthographicCamera(
+        -width / 2, width / 2, height/2, -height/2, 1, 1000);
     camera.position.z = 5;
 
     //Initialize the renderer
-    var renderer = new THREE.WebGLRenderer();
+    renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    //var geometry = new THREE.BoxGeometry(1, 1, 1);
+    //Create the plane that we will shade
     var geometry = new THREE.PlaneGeometry(width, height);
-    //var material = new THREE.MeshBasicMaterial({color: 0x00ff00});
-    var vertex_shader = document.getElementById("vertex-shader").innerHTML;
-    var frag_shader = document.getElementById("frag-shader").innerHTML;
-    var uniforms = {
+    uniforms = {
         time: {value: 1.0},
         mouse: {value: new THREE.Vector2(0.0, 0.0)},
         resolution: {value: new THREE.Vector2(width, height)},
@@ -32,35 +77,11 @@ var init = () => {
     }
     var material = new THREE.ShaderMaterial({
         uniforms: uniforms,
-        vertexShader: vertex_shader,
-        fragmentShader: frag_shader
+        vertexShader: vert_shaders[current_vert],
+        fragmentShader: frag_shaders[current_frag]
     });
-    var cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
-
-    function update_mouse(event) {
-        event.preventDefault();
-        uniforms.mouse.value.x = event.clientX;
-        uniforms.mouse.value.y = -event.clientY;
-    }
-    window.onmousemove = update_mouse;
-
-    function resize() {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        uniforms.resolution.value.x = window.innerWidth;
-        uniforms.resolution.value.y = window.innerHeight;
-    }
-    window.onresize = resize;
-
-    function scroll(event) {
-        if (event.deltaY < 0)
-            uniforms.scroll.value--;
-        else
-            uniforms.scroll.value++;
-    }
-    window.onmousewheel = scroll;
+    var plane = new THREE.Mesh(geometry, material);
+    scene.add(plane);
 
     function render() {
         requestAnimationFrame(render);
@@ -70,4 +91,32 @@ var init = () => {
     render();
 };
 
-window.onload = init;
+$(document).ready(() => {
+    load_vert_shaders()
+        .then(store_vert_shaders)
+        .then(load_frag_shaders)
+        .then(store_frag_shaders)
+        .then(setup_shaders)
+        .catch(console.error);
+
+    $(document).mousemove((event) => {
+        event.preventDefault();
+        uniforms.mouse.value.x = event.clientX;
+        uniforms.mouse.value.y = -event.clientY;
+    });
+
+    $(window).resize(() => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        uniforms.resolution.value.x = window.innerWidth;
+        uniforms.resolution.value.y = window.innerHeight;
+    });
+
+    $(window).on('wheel', (event) => {
+        if (event.deltaY < 0)
+            uniforms.scroll.value--;
+        else
+            uniforms.scroll.value++;
+    });
+});
