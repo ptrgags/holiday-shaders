@@ -10,16 +10,35 @@ var vert_shader_list = [
 ];
 
 var frag_shader_list = [
-    "orange.frag",
     "quasicrystal.frag",
-    "mandelbrot.frag"
+    "orange.frag",
+    "mandelbrot.frag",
+    "purple_twist.frag",
+    "ghost_cells.frag"
+];
+
+var shader_titles = [
+    "Quasicrystal",
+    "Bell Gradient",
+    "Mandelbrot Set",
+    "Purple Twist",
+    "Ghost Cells"
+];
+
+var shader_descriptions = [
+    "\"Quasicrystal\", a variation of the shader from taken from <a href=\"http://pixelshaders.com/examples/quasicrystal.html\">this tutorial</a>. <br />Mouse x: color. Mouse y: wave frequency",
+    "Bell-curve gradient with pulsing width",
+    "the Mandelbrot set fractal. <br /> Mouse x: zoom in/out. Scrollwheel: select point of interest",
+    "You are getting very sleepy...",
+    "Worley Noise with distortion. Unlike on ShaderToy, I used a better noise function"
 ];
 
 var current_vert = 0;
-var current_frag = 2;
+var current_frag = 0;
 
 var camera = null;
 var renderer = null;
+var material = null;
 
 var preload_shader = (fname) => {
     return new Promise((resolve, reject) => {
@@ -56,16 +75,16 @@ var setup_shaders = () => {
 
     // lights, Camera, action! except there's no
     // lights or action yet...
-    var width = window.innerWidth;
-    var height = window.innerHeight;
+    var width = $('#three').width();
+    var height = $('#three').height();
     camera = new THREE.OrthographicCamera(
         -width / 2, width / 2, height/2, -height/2, 1, 1000);
     camera.position.z = 5;
 
     //Initialize the renderer
-    renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+    renderer = new THREE.WebGLRenderer({canvas: $('#three')[0]});
+    renderer.setSize(width, height);
+    //document.body.appendChild(renderer.domElement);
 
     //Create the plane that we will shade
     var geometry = new THREE.PlaneGeometry(width, height);
@@ -75,7 +94,7 @@ var setup_shaders = () => {
         resolution: {value: new THREE.Vector2(width, height)},
         scroll: {value: 0}
     }
-    var material = new THREE.ShaderMaterial({
+    material = new THREE.ShaderMaterial({
         uniforms: uniforms,
         vertexShader: vert_shaders[current_vert],
         fragmentShader: frag_shaders[current_frag]
@@ -99,24 +118,57 @@ $(document).ready(() => {
         .then(setup_shaders)
         .catch(console.error);
 
-    $(document).mousemove((event) => {
+    $("#desc").html(shader_descriptions[current_frag]);
+    $("#title").html(shader_titles[current_frag]);
+    $("#current").html(current_frag + 1);
+    $("#all").html(frag_shader_list.length);
+
+    $('#three').mousemove((event) => {
+        if (!uniforms)
+            return;
         event.preventDefault();
-        uniforms.mouse.value.x = event.clientX;
-        uniforms.mouse.value.y = -event.clientY;
+        var offset = $('#three').offset();
+        uniforms.mouse.value.x = event.clientX - offset.left;
+        uniforms.mouse.value.y = event.clientY - offset.top;
     });
 
     $(window).resize(() => {
-        camera.aspect = window.innerWidth / window.innerHeight;
+        if (!uniforms)
+            return;
+        var width = $('#three').width();
+        var height = $('#three').height();
+        camera.aspect = width/height;
         camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        uniforms.resolution.value.x = window.innerWidth;
-        uniforms.resolution.value.y = window.innerHeight;
+        renderer.setSize(width, height);
+        uniforms.resolution.value.x = width;
+        uniforms.resolution.value.y = height;
     });
 
     $(window).on('wheel', (event) => {
+        if (!uniforms)
+            return;
         if (event.deltaY < 0)
             uniforms.scroll.value--;
         else
             uniforms.scroll.value++;
+    });
+
+    $('#prev').click(() => {
+        var len = frag_shaders.length;
+        current_frag = (current_frag - 1 + len) % len;
+        material.fragmentShader = frag_shaders[current_frag];
+        material.needsUpdate = true;
+        $("#desc").html(shader_descriptions[current_frag]);
+        $("#title").html(shader_titles[current_frag]);
+        $("#current").html(current_frag + 1);
+    });
+
+    $('#next').click(() => {
+        current_frag = (current_frag + 1) % frag_shaders.length;
+        material.fragmentShader = frag_shaders[current_frag];
+        material.needsUpdate = true;
+        $("#desc").html(shader_descriptions[current_frag]);
+        $("#title").html(shader_titles[current_frag]);
+        $("#current").html(current_frag + 1);
     });
 });
