@@ -14,7 +14,10 @@ var frag_shader_list = [
     "orange.frag",
     "mandelbrot.frag",
     "purple_twist.frag",
-    "ghost_cells.frag"
+    "ghost_cells.frag",
+    "interference.frag",
+    "voronoi_pulse.frag",
+    "rainbow_pulse.frag"
 ];
 
 var shader_titles = [
@@ -22,7 +25,10 @@ var shader_titles = [
     "Bell Gradient",
     "Mandelbrot Set",
     "Purple Twist",
-    "Ghost Cells"
+    "Ghost Cells",
+    "Interference",
+    "Voronoi Pulse",
+    "Rainbow Pulse"
 ];
 
 var shader_descriptions = [
@@ -30,7 +36,10 @@ var shader_descriptions = [
     "Bell-curve gradient with pulsing width",
     "the Mandelbrot set fractal. <br /> Mouse x: zoom in/out. Scrollwheel: select point of interest",
     "You are getting very sleepy...",
-    "Worley Noise with distortion. Unlike on ShaderToy, I used a better noise function"
+    "Worley Noise with distortion. Unlike on ShaderToy, I used a better noise function",
+    "Simulation of the interference patterns of two waves. <br/> Mouse: Move the waves. Scrollwheel: toggle third point",
+    "Voronoi diagram with pulsing animation. <br/> Mouse: Move one of the points",
+    "Okay, not technically a rainbow but it sounded cool at the time..."
 ];
 
 var current_vert = 0;
