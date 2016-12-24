@@ -18,7 +18,10 @@ var frag_shader_list = [
     "interference.frag",
     "voronoi_pulse.frag",
     "rainbow_pulse.frag",
-    "simplex_magnify.frag"
+    "simplex_magnify.frag",
+    "barrel_pincushion.frag",
+    "wavy_eye.frag",
+    "triangle_flash.frag"
 ];
 
 var shader_titles = [
@@ -31,6 +34,9 @@ var shader_titles = [
     "Voronoi Pulse",
     "Rainbow Pulse",
     "Triangles",
+    "Barrel and Pincushion Distortion",
+    "Wavy Eye",
+    "Triangle Flash"
 ];
 
 var shader_descriptions = [
@@ -42,7 +48,10 @@ var shader_descriptions = [
     "Simulation of the interference patterns of two waves. <br/> Mouse: Move the waves. Scrollwheel: toggle third point",
     "Voronoi diagram with pulsing animation. <br/> Mouse: Move one of the points",
     "Okay, not technically a rainbow but it sounded cool at the time...",
-    "Grid of triangles. Mouse: Move the magnifying glass"
+    "Grid of triangles. <br />Mouse: Move the magnifying glass",
+    "This is the same effect used to make a magnifying glass!",
+    "It's watching you...",
+    "Triangles."
 ];
 
 var current_vert = 0;
