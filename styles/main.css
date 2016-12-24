@@ -5,7 +5,12 @@ body {
     background: #000000 !important;
 }
 
-canvas {
+div#wrapper {
+    width: 100%;
+    height: 100%;
+}
+
+canvas#three {
     width: 100%;
     height: 100%;
 }

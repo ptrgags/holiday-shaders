@@ -12,12 +12,12 @@ var vert_shader_list = [
 var frag_shader_list = [
     "quasicrystal.frag",
     "orange.frag",
+    "rainbow_pulse.frag",
     "mandelbrot.frag",
     "purple_twist.frag",
     "ghost_cells.frag",
     "interference.frag",
     "voronoi_pulse.frag",
-    "rainbow_pulse.frag",
     "simplex_magnify.frag",
     "barrel_pincushion.frag",
     "wavy_eye.frag",
@@ -27,12 +27,12 @@ var frag_shader_list = [
 var shader_titles = [
     "Quasicrystal",
     "Bell Gradient",
+    "Rainbow Pulse",
     "Mandelbrot Set",
     "Purple Twist",
     "Ghost Cells",
     "Interference",
     "Voronoi Pulse",
-    "Rainbow Pulse",
     "Triangles",
     "Barrel and Pincushion Distortion",
     "Wavy Eye",
@@ -42,12 +42,12 @@ var shader_titles = [
 var shader_descriptions = [
     "\"Quasicrystal\", a variation of the shader from taken from <a href=\"http://pixelshaders.com/examples/quasicrystal.html\">this tutorial</a>. <br />Mouse x: color. Mouse y: wave frequency",
     "Bell-curve gradient with pulsing width",
+    "Okay, not technically a rainbow but it sounded cool at the time...",
     "the Mandelbrot set fractal. <br /> Mouse x: zoom in/out. Scrollwheel: select point of interest",
     "You are getting very sleepy...",
     "Worley Noise with distortion. Unlike on ShaderToy, I used a better noise function",
     "Simulation of the interference patterns of two waves. <br/> Mouse: Move the waves. Scrollwheel: toggle third point",
     "Voronoi diagram with pulsing animation. <br/> Mouse: Move one of the points",
-    "Okay, not technically a rainbow but it sounded cool at the time...",
     "Grid of triangles. <br />Mouse: Move the magnifying glass",
     "This is the same effect used to make a magnifying glass! <br/> Mouse: pan around",
     "It's watching you...",
@@ -96,8 +96,8 @@ var setup_shaders = () => {
 
     // lights, Camera, action! except there's no
     // lights or action yet...
-    var width = $('#three').width();
-    var height = $('#three').height();
+    var width = $('#wrapper').width();
+    var height = $('#wrapper').height();
     camera = new THREE.OrthographicCamera(
         -width / 2, width / 2, height/2, -height/2, 1, 1000);
     camera.position.z = 5;
@@ -131,22 +131,8 @@ var setup_shaders = () => {
     render();
 };
 
-$(document).ready(() => {
-    load_vert_shaders()
-        .then(store_vert_shaders)
-        .then(load_frag_shaders)
-        .then(store_frag_shaders)
-        .then(setup_shaders)
-        .catch(console.error);
-
-    $("#desc").html(shader_descriptions[current_frag]);
-    $("#title").html(shader_titles[current_frag]);
-    $("#current").html(current_frag + 1);
-    $("#all").html(frag_shader_list.length);
-
+var attach_callbacks = () => {
     $('#three').mousemove((event) => {
-        if (!uniforms)
-            return;
         event.preventDefault();
         var offset = $('#three').offset();
         uniforms.mouse.value.x = event.clientX - offset.left;
@@ -154,20 +140,17 @@ $(document).ready(() => {
     });
 
     $(window).resize(() => {
-        if (!uniforms)
-            return;
-        var width = $('#three').width();
-        var height = $('#three').height();
+        var width = $('#wrapper').width();
+        var height = $('#wrapper').height();
+        console.log(width, height);
+        uniforms.resolution.value.x = width;
+        uniforms.resolution.value.y = height;
         camera.aspect = width/height;
         camera.updateProjectionMatrix();
         renderer.setSize(width, height);
-        uniforms.resolution.value.x = width;
-        uniforms.resolution.value.y = height;
     });
 
     $(window).on('wheel', (event) => {
-        if (!uniforms)
-            return;
         if (event.deltaY < 0)
             uniforms.scroll.value--;
         else
@@ -192,4 +175,19 @@ $(document).ready(() => {
         $("#title").html(shader_titles[current_frag]);
         $("#current").html(current_frag + 1);
     });
+};
+
+$(document).ready(() => {
+    load_vert_shaders()
+        .then(store_vert_shaders)
+        .then(load_frag_shaders)
+        .then(store_frag_shaders)
+        .then(setup_shaders)
+        .then(attach_callbacks)
+        .catch(console.error);
+
+    $("#desc").html(shader_descriptions[current_frag]);
+    $("#title").html(shader_titles[current_frag]);
+    $("#current").html(current_frag + 1);
+    $("#all").html(frag_shader_list.length);
 });
