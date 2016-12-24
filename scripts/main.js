@@ -49,7 +49,7 @@ var shader_descriptions = [
     "Voronoi diagram with pulsing animation. <br/> Mouse: Move one of the points",
     "Okay, not technically a rainbow but it sounded cool at the time...",
     "Grid of triangles. <br />Mouse: Move the magnifying glass",
-    "This is the same effect used to make a magnifying glass!",
+    "This is the same effect used to make a magnifying glass! <br/> Mouse: pan around",
     "It's watching you...",
     "Triangles."
 ];
