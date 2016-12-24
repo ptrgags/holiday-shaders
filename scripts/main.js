@@ -17,7 +17,8 @@ var frag_shader_list = [
     "ghost_cells.frag",
     "interference.frag",
     "voronoi_pulse.frag",
-    "rainbow_pulse.frag"
+    "rainbow_pulse.frag",
+    "simplex_magnify.frag"
 ];
 
 var shader_titles = [
@@ -28,7 +29,8 @@ var shader_titles = [
     "Ghost Cells",
     "Interference",
     "Voronoi Pulse",
-    "Rainbow Pulse"
+    "Rainbow Pulse",
+    "Triangles",
 ];
 
 var shader_descriptions = [
@@ -39,7 +41,8 @@ var shader_descriptions = [
     "Worley Noise with distortion. Unlike on ShaderToy, I used a better noise function",
     "Simulation of the interference patterns of two waves. <br/> Mouse: Move the waves. Scrollwheel: toggle third point",
     "Voronoi diagram with pulsing animation. <br/> Mouse: Move one of the points",
-    "Okay, not technically a rainbow but it sounded cool at the time..."
+    "Okay, not technically a rainbow but it sounded cool at the time...",
+    "Grid of triangles. Mouse: Move the magnifying glass"
 ];
 
 var current_vert = 0;

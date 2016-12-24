@@ -39,8 +39,8 @@ void main()
         interference = (center_pulse + mouse_pulse + mirror_pulse) / 3.0;
     }
 
-    //Blue
-    vec3 color = vec3(0.212, 0.549, 0.714);
+    //Green
+    vec3 color = vec3(0.5, 1.0, 0.0);
 
     gl_FragColor.rgb = interference * color;
     gl_FragColor.a = 1.0;
