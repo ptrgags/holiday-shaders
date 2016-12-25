@@ -11,6 +11,7 @@ const mat2 DIAMOND = mat2(
     -1.0 / tan(PI / 3.0), 1.0 / sin(PI / 3.0)
 );
 
+//Inspired by FabriceNeyret2's hexagaon tiling tutorial -- https://www.shadertoy.com/view/4dKXR3
 void main() {
     //Centered UV coordinates accounting for aspect ratio
     vec2 uv = (gl_FragCoord.xy - center) / resolution.y;
